@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react'
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext'
 
 
 const Signup = () => {
-  const [user,setUser] = useState({name:"",password:"",email:"",cpassword:""})
-  const {setAlerts} = useContext(AlertContext);
-  let navigate  = useNavigate();
+  const [user, setUser] = useState({ name: "", password: "", email: "", cpassword: "" })
+  const setAlerts = useContext(AlertContext);
+  let navigate = useNavigate();
   const onChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value })
   }
@@ -14,33 +14,33 @@ const Signup = () => {
   const handleSubmit = async (e) => {
 
     e.preventDefault();
-        const response = await fetch(`http://localhost:5000/api/auth/createuser`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name: user.name, 
-                email: user.email,
-                password: user.password
-            }),
-        });
-        
-        const json = await response.json();
-        if(response.status === 200) {
-            localStorage.setItem("authToken",json.authtoken)
-            navigate("/")
-            setAlerts({type:"success",message:"Account Created"})
-        }
-    
-    
+    const response = await fetch(`http://localhost:5000/api/auth/createuser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: user.name,
+        email: user.email,
+        password: user.password
+      }),
+    });
+
+    const json = await response.json();
+    if (response.status === 200) {
+      localStorage.setItem("authToken", json.authtoken)
+      navigate("/")
+      setAlerts({ type: "success", message: "Account Created" })
+    }
+
+
 
   }
   return (
     <div className="container mt-5">
       <h2>Signup to continue to Noteseasy</h2>
       <form onSubmit={handleSubmit}>
-      <div className="mb-3">
+        <div className="mb-3">
           <label htmlFor="name" className="form-label">Name</label>
           <input type="text" className="form-control" id="name" name="name" onChange={onChange} />
         </div>

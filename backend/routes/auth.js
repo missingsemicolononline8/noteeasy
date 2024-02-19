@@ -65,8 +65,7 @@ router.post('/login', [
     // If there are errors, return Bad Request and the errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        res.status(400).json({ "errors": errors.array() });
-
+       return res.status(400).json({ "errors": errors.array() });
     }
 
     const {email,password} = req.body;
@@ -100,7 +99,7 @@ router.post('/login', [
 router.post('/getuser', fetchUser,async (req ,res) => {
 
     try {
-        userId = req.user.id;
+        let userId = req.user.id;
         const user = await User.findById(userId).select('-password');
         res.send(user)
     }

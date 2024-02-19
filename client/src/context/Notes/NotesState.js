@@ -8,7 +8,8 @@ const NotesState = (props) => {
   const HOST = process.env.REACT_APP_API_HOST;
   const initState = [];
   const [notes, setNotes] = useState(initState);
-  const {setAlerts} = useContext(AlertContext);
+  const [toUpdate, setToUpdate] = useState(null);
+  const setAlerts = useContext(AlertContext);
 
   // Fetch Notes
   const getNotes = async () => {
@@ -40,8 +41,13 @@ const NotesState = (props) => {
         "tag": tag
       }),
     });
-
     const note = await response.json();
+    
+    if(response.status === 400) {
+        setAlerts({type:"error",message:"Error occured"})
+        console.log(note);
+        return;
+    }  
     setNotes(notes.concat(note))
     setAlerts({type:"success",message:"Note Added"})
   }
@@ -103,7 +109,7 @@ const NotesState = (props) => {
 
   }
 
-  return <NotesContext.Provider value={{ notes, addNote, deleteNote, updateNote, getNotes }}>
+  return <NotesContext.Provider value={{ notes, toUpdate,addNote, deleteNote, updateNote, getNotes, setToUpdate }}>
     {props.children}
   </NotesContext.Provider>
 }
