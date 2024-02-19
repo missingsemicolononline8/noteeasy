@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext'
 
 
@@ -37,28 +37,33 @@ const Signup = () => {
 
   }
   return (
-    <div className="container mt-5">
-      <h2>Signup to continue to Noteseasy</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label">Name</label>
-          <input type="text" className="form-control" id="name" name="name" onChange={onChange} />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email address</label>
-          <input type="email" className="form-control" id="email" name='email' aria-describedby="emailHelp" onChange={onChange} />
-          <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">Password</label>
-          <input type="password" className="form-control" id="password" name="password" onChange={onChange} />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="cpassword" className="form-label">Password</label>
-          <input type="password" className="form-control" id="cpassword" name="cpassword" onChange={onChange} />
-        </div>
-        <button disabled={user.name.length === 0 || user.email.length === 0 || user.password.length < 6 || user.password !== user.cpassword} type="submit" className="btn btn-primary">Submit</button>
-      </form>
+    <div className='flex justify-center items-center w-full h-screen bg-gray-500'>
+      <div id="form-wrapper" className="bg-white rounded-lg w-[340px] p-6">
+        <h1 className='text-center text-3xl font-bold'>Sign Up</h1>
+        <p className="text-center mt-3 font-medium text-gray-500 text-md leading-6">
+          Enter your information to create an account
+        </p>
+        <form className='mt-4' onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-2 mt-2 mb-1">
+            <label htmlFor="name" className="text-base font-bold">Name</label>
+            <input type="text" className="outline-none rounded-lg border-2 py-2 px-3 border-gray-200" id="name" name="name" placeholder='John Doe' onChange={onChange} />
+          </div>
+          <div className="form-group flex flex-col gap-2 mt-3 mb-1">
+            <label htmlFor="email" className="text-base font-bold">Email address</label>
+            <input type="email" className="outline-none rounded-lg border-2 py-2 px-3 border-gray-200" id="email" name='email' aria-describedby="emailHelp" placeholder='johndoe@example.com' onChange={onChange} />
+          </div>
+          <div className="form-group flex flex-col gap-2 mt-3 mb-1">
+            <label htmlFor="password" className="text-base font-bold">Password</label>
+            <input type="password" className="outline-none rounded-lg border-2 py-2 px-3 border-gray-200" id="password" name="password" placeholder='*********' onChange={onChange} />
+          </div>
+          <div className="flex flex-col gap-2 mt-3 mb-3">
+            <label htmlFor="cpassword" className="text-base font-bold">Confirm Password</label>
+            <input type="password" className="outline-none rounded-lg border-2 py-2 px-3 border-gray-200" id="cpassword" name="cpassword" placeholder='*********' onChange={onChange} />
+          </div>
+          <button disabled={user.name.length === 0 || user.email.length === 0 || user.password.length < 6 || user.password !== user.cpassword} type="submit" className="bg-black disabled:opacity-55 w-full rounded-md text-white text-base py-2 text-center">Submit</button>
+        </form>
+        <p className="text-center mt-3 font-medium">Already have an account? <ins><Link to="/login">Login</Link></ins></p>
+      </div>
     </div>
 
   )

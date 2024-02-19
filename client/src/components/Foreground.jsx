@@ -1,4 +1,4 @@
-import { Routes, Route, } from "react-router-dom";
+import { Routes, Route, Outlet, } from "react-router-dom";
 
 import Navbar from './Navbar';
 import Home from '../pages/Home';
@@ -12,14 +12,16 @@ const Foreground = () => {
     return (
         <div className="z-10 relative h-screen flex flex-col">
             <AlertState>
-                <Navbar />
                 <Routes>
-                    <Route path="/" >
+                    <Route path="/" element={<>
+                        <Navbar />
+                        <Outlet />
+                    </>} >
                         <Route index element={<Home />} />
                         <Route path="about" element={<About />} />
-                        <Route path="login" element={<Login />} />
-                        <Route path="signup" element={<Signup />} />
                     </Route>
+                    <Route path="login" element={<Login />} />
+                    <Route path="signup" element={<Signup />} />
                 </Routes>
             </AlertState>
         </div>
