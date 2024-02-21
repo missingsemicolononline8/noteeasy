@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext';
 
 const signIn = async ({ email, password }) => {
-    const response = await fetch(`http://localhost:5000/api/auth/login`, {
+    const API_HOST = process.env.REACT_APP_API_HOST;
+    const response = await fetch(`${API_HOST}/api/auth/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

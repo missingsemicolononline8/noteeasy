@@ -8,7 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const setAlerts = useContext(AlertContext);
   const [userName, setUserName] = useState("");
-  const HOST = process.env.REACT_APP_API_HOST;
+  const API_HOST = process.env.REACT_APP_API_HOST;
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -19,7 +19,10 @@ const Navbar = () => {
   useEffect(() => {
 
     (async () => {
-      const request = await fetch(`${HOST}/api/auth/getuser`, {
+      if (!localStorage.getItem('authToken')) {
+        navigate("/login")
+      }
+      const request = await fetch(`${API_HOST}/api/auth/getuser`, {
         method: "POST",
         headers: {
           "auth-token": localStorage.getItem('authToken'),
@@ -29,6 +32,7 @@ const Navbar = () => {
 
       const user = await request.json();
       setUserName(user.name)
+
     })()
 
   }, [])

@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import AlertContext from '../context/Alert/AlertContext'
 
 const signUp = async ({ name, password, email }) => {
-  const response = await fetch(`http://localhost:5000/api/auth/createuser`, {
+  const API_HOST = process.env.REACT_APP_API_HOST;
+  const response = await fetch(`${API_HOST}/api/auth/createuser`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -80,7 +81,7 @@ const Signup = () => {
       dispatch({ type: "success", payload: { response } })
     }
     catch (e) {
-      dispatch({ type: "error", error: JSON.parse(e.message) });
+      dispatch({ type: "error", error: e.message });
     }
 
   }

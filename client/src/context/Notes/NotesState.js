@@ -5,7 +5,7 @@ import AlertContext from "../Alert/AlertContext";
 
 
 const NotesState = (props) => {
-  const HOST = process.env.REACT_APP_API_HOST;
+  const API_HOST = process.env.REACT_APP_API_HOST;
   const initState = [];
   const [notes, setNotes] = useState(initState);
   const [toUpdate, setToUpdate] = useState(null);
@@ -13,7 +13,7 @@ const NotesState = (props) => {
 
   // Fetch Notes
   const getNotes = async () => {
-    const response = await fetch(`${HOST}/api/notes/fetchallnotes`, {
+    const response = await fetch(`${API_HOST}/api/notes/fetchallnotes`, {
       method: "GET",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -28,7 +28,7 @@ const NotesState = (props) => {
   const addNote = useCallback(async (title, description, tag ) => {
     console.log("Adding a new note");
     // TODO : API CALL
-    const response = await fetch(`${HOST}/api/notes/addnote`, {
+    const response = await fetch(`${API_HOST}/api/notes/addnote`, {
       method: "POST",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -56,7 +56,7 @@ const NotesState = (props) => {
   const deleteNote = async (id) => {
     // API Call
     
-    const response = await fetch(`${HOST}/api/notes/deletenote/${id}`, {
+    const response = await fetch(`${API_HOST}/api/notes/deletenote/${id}`, {
       method: "DELETE",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -75,7 +75,7 @@ const NotesState = (props) => {
 
   const updateNote = async (id, title, description, tag) => {
     //API Call
-    const response = await fetch(`${HOST}/api/notes/updatenote/${id}`, {
+    const response = await fetch(`${API_HOST}/api/notes/updatenote/${id}`, {
       method: "PUT",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -106,7 +106,7 @@ const NotesState = (props) => {
   // Toggle Note Pinned
 
   const toggleNotePin = async (noteId,pinned,cb) => {
-    const response = await fetch(`${HOST}/api/notes/togglepin/${noteId}`, {
+    const response = await fetch(`${API_HOST}/api/notes/togglepin/${noteId}`, {
       method: "PUT",
       headers: {
           "auth-token": localStorage.getItem('authToken'),
