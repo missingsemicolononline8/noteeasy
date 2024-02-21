@@ -21,7 +21,7 @@ const NotesList = () => {
     console.log('Notes List Component')
 
     return (
-        <div ref={ref} className="container mx-auto px-4 pt-5 flex gap-3 overflow-x-clip items-start flex-grow" >
+        <div ref={ref} className="container mx-auto px-4 pt-5 flex gap-3 flex-wrap items-start flex-grow" >
             {notes.map(note => {
                 return <NoteItem note={note} key={note._id} parent={ref} />
             })}

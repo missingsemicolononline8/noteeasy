@@ -1,55 +1,40 @@
 import React, { useContext, useState, useRef, useCallback, useEffect } from 'react';
 import NotesContext from '../../context/Notes/NotesContext';
 
-
 export const resizeTextarea = (e) => {
     const textarea = e.target;
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
 };
 
-/**
- * Component for adding a note.
- * @returns {JSX.Element} The Addnote component.
- */
 const Addnote = ({ classes }) => {
     const { addNote } = useContext(NotesContext);
-    const initialState = { title: '', description: '', tag: '' };
-    const [note, setNote] = useState(initialState);
     const formRef = useRef(null);
-    const textAreaRef = useRef(null);
+    const titleInputRef = useRef(null);
+    const descriptionInputRef = useRef(null);
+    const tagInputRef = useRef(null);
 
-    /**
-     * Event handler for input changes.
-     * @param {Event} e - The input change event.
-     */
-    const onChange = (e) => {
-        setNote({ ...note, [e.target.name]: e.target.value });
+    const resetInputs = () => {
+        titleInputRef.current.value = '';
+        descriptionInputRef.current.value = '';
+        tagInputRef.current.value = '';
     };
 
-    /**
-     * Event handler for adding a note.
-     * @param {Event} e - The click event.
-     */
     const handleAdd = (e) => {
         e?.preventDefault();
         e?.target.blur();
-        textAreaRef.current.removeAttribute('style');
+
+        const title = titleInputRef.current;
+        const description = descriptionInputRef.current;
+        const tag = tagInputRef.current;
+
+        descriptionInputRef.current.removeAttribute('style');
         formRef.current.removeAttribute('form-clicked');
-        if (!note.description && !note.title) return;
-        addNote(note.title, note.description, note.tag);
-        setNote(initialState);
+        if (!description.value && !title.value) return;
+        addNote(title.value, description.value, tag.value);
+        resetInputs();
     };
 
-    /**
-     * Resizes the textarea to fit the content.
-     * @param {Event} e - The input change event.
-     */
-
-    /**
-     * Event listener for document mousedown events.
-     * @param {Event} e - The mousedown event.
-     */
     const documentListener = (e) => {
         if (formRef.current && !formRef.current.contains(e.target)) {
             handleAdd();
@@ -57,11 +42,8 @@ const Addnote = ({ classes }) => {
         }
     };
 
-    /**
-     * Event handler for form click events.
-     */
     const formClickHandler = () => {
-        if (!(formRef.current.getAttribute('form-clicked') === 'true')) {
+        if (!formRef.current.getAttribute('form-clicked')) {
             document.addEventListener('mousedown', documentListener);
             formRef.current.setAttribute('form-clicked', 'true');
         }
@@ -69,15 +51,12 @@ const Addnote = ({ classes }) => {
 
     useEffect(() => {
         formRef.current.addEventListener('click', formClickHandler);
-        if (formRef.current.getAttribute('form-clicked') === 'true') {
-            document.addEventListener('mousedown', documentListener);
-        }
 
         return () => {
             formRef.current?.removeEventListener('click', formClickHandler);
             document.removeEventListener('mousedown', documentListener);
         };
-    }, [note]);
+    }, []);
 
     console.log("Add note component");
 
@@ -91,22 +70,17 @@ const Addnote = ({ classes }) => {
                         className='form-control w-full p-3 pb-2 outline-none'
                         id='title'
                         name='title'
-                        value={note.title}
-                        onChange={onChange}
+                        ref={titleInputRef}
                     />
                 </div>
                 <textarea
                     placeholder='Take a note...'
-                    ref={textAreaRef}
                     className='form-control w-full px-3 py-2 outline-none resize-none text-lg group-focus-within:text-base overflow-hidden -mb-[7px]'
                     id='description'
                     name='description'
                     rows="1"
-                    value={note.description}
-                    onChange={(e) => {
-                        onChange(e);
-                        resizeTextarea(e);
-                    }}
+                    onChange={resizeTextarea}
+                    ref={descriptionInputRef}
                 ></textarea>
                 <div className='hidden group-focus-within:block'>
                     <input
@@ -115,8 +89,7 @@ const Addnote = ({ classes }) => {
                         className='form-control w-full px-3 py-2 outline-none'
                         id='tag'
                         name='tag'
-                        value={note.tag}
-                        onChange={onChange}
+                        ref={tagInputRef}
                     />
                 </div>
                 <button
@@ -129,6 +102,5 @@ const Addnote = ({ classes }) => {
         </div>
     );
 };
-
 
 export default Addnote;
