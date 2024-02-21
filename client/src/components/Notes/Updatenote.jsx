@@ -10,12 +10,11 @@ const Updatenote = () => {
 
     const editModal = useRef(null);
 
-    const { updateNote, toUpdate, setToUpdate } = useContext(NotesContext);
+    const { updateNote, toUpdate } = useContext(NotesContext);
 
     const handleUpdate = (e) => {
         e?.preventDefault();
         updateNote(toUpdate._id, titleInput.current.value, descriptionInput.current.value, tagInput.current.value);
-        setToUpdate(null);
     }
 
 
@@ -28,8 +27,6 @@ const Updatenote = () => {
             resizeTextarea({ target: descriptionInput.current })
         }
     }, [toUpdate])
-
-    console.log("Update note")
 
 
     return (

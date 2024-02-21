@@ -7,12 +7,10 @@ import NotesState from '../../context/Notes/NotesState';
 
 const Notes = () => {
 
-    console.log("Notes.jsx rendered");
-
-
+    console.log("Notes Component")
     return (
         <NotesState>
-            <Addnote classes={"w-2/5 mt-10 mx-auto pb-5"} />
+            <Addnote classes="w-2/5 mt-10 mx-auto pb-5" />
             <NotesList />
             <Updatenote />
         </NotesState>

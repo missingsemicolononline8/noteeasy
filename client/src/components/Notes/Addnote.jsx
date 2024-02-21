@@ -79,6 +79,8 @@ const Addnote = ({ classes }) => {
         };
     }, [note]);
 
+    console.log("Add note component");
+
     return (
         <div className={classes}>
             <form ref={formRef} className='my-3 group rounded-lg shadow-custom overflow-hidden bg-white z-20 relative'>

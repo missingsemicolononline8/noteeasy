@@ -1,4 +1,4 @@
-import { useContext, useState} from "react";
+import { useCallback, useContext, useState} from "react";
 import NotesContext from "./NotesContext";
 import AlertContext from "../Alert/AlertContext";
 
@@ -25,7 +25,7 @@ const NotesState = (props) => {
   }
 
   // Add a note
-  const addNote = async (title, description, tag ) => {
+  const addNote = useCallback(async (title, description, tag ) => {
     console.log("Adding a new note");
     // TODO : API CALL
     const response = await fetch(`${HOST}/api/notes/addnote`, {
@@ -48,9 +48,9 @@ const NotesState = (props) => {
         console.log(note);
         return;
     }  
-    setNotes(notes.concat(note))
+    setNotes((prevNotes) => prevNotes.concat(note) )
     setAlerts({type:"success",message:"Note Added"})
-  }
+  } ,[])
 
   // Delete a note
   const deleteNote = async (id) => {
@@ -93,23 +93,38 @@ const NotesState = (props) => {
     const json = await response.json();
 
     // Logic to edit in client
-    let newNotes = [...notes];
-    for (let index = 0; index < newNotes.length; index++) {
-      const note = newNotes[index];
-      if (note._id === id) {
-        note.title = title;
-        note.description = description;
-        note.tag = tag
-      }
-
-    }
+    const newNotes = notes.map(note => {
+      return note._id === id ? {...note,title,description,tag} : note  
+    });
 
     setNotes(newNotes);
+    setToUpdate(null);
     setAlerts({type:"success",message:"Note Updated"})
 
   }
 
-  return <NotesContext.Provider value={{ notes, toUpdate,addNote, deleteNote, updateNote, getNotes, setToUpdate }}>
+  // Toggle Note Pinned
+
+  const toggleNotePin = async (noteId,pinned,cb) => {
+    const response = await fetch(`${HOST}/api/notes/togglepin/${noteId}`, {
+      method: "PUT",
+      headers: {
+          "auth-token": localStorage.getItem('authToken'),
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+          isPinned: !pinned
+      }),
+
+  })
+  if (response.status !== 200) {
+      return
+  }
+  cb((prev) => !prev)
+
+  }
+
+  return <NotesContext.Provider value={{ notes, toUpdate,addNote, deleteNote, updateNote, getNotes, setToUpdate, toggleNotePin }}>
     {props.children}
   </NotesContext.Provider>
 }

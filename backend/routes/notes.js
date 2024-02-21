@@ -12,7 +12,7 @@ const { body, validationResult } = require('express-validator');
 router.get('/fetchallnotes', fetchUser, async (req, res) => {
 
     try {
-        const notes = await Note.find({ user: req.user.id });
+        const notes = await Note.find({ user: req.user.id }).sort({ pinned: -1 });
         res.json(notes)
 
     } catch (error) {
@@ -66,6 +66,31 @@ router.put('/updatenote/:id', fetchUser, async (req, res) => {
     }
 
     note = await Note.findByIdAndUpdate(req.params.id,{$set: newNote}, {new: true})
+
+    res.json(note)
+
+    } catch (error) {
+        console.log(e.message)
+        return res.status(500).send("Internal server error");
+    }
+});
+
+router.put('/togglepin/:id', fetchUser, async (req, res) => {
+    const {isPinned} = req.body;
+    
+    try {
+    
+    // find the note to be updated & update it
+    let note = await Note.findById(req.params.id);
+    if(!note) {
+        return res.status(404).send("Not Found");
+    }
+    // Allow updation only if user owns this note
+    if(note.user.toString() !== req.user.id) {
+        return res.status(401).send("Not Allowed");
+    }
+    note.pinned = isPinned;
+    note.save()
 
     res.json(note)
 

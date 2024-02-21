@@ -2,7 +2,6 @@ import { Routes, Route, Outlet, } from "react-router-dom";
 
 import Navbar from './Navbar';
 import Home from '../pages/Home';
-import About from '../pages/About';
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import AlertState from '../context/Alert/AlertState';
@@ -18,7 +17,6 @@ const Foreground = () => {
                         <Outlet />
                     </>} >
                         <Route index element={<Home />} />
-                        <Route path="about" element={<About />} />
                     </Route>
                     <Route path="login" element={<Login />} />
                     <Route path="signup" element={<Signup />} />
