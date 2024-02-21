@@ -20,7 +20,7 @@ const Navbar = () => {
 
     (async () => {
       if (!localStorage.getItem('authToken')) {
-        navigate("/login")
+        return navigate("/login")
       }
       const request = await fetch(`${API_HOST}/api/auth/getuser`, {
         method: "POST",

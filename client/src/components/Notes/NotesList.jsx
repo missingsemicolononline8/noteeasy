@@ -7,7 +7,8 @@ const NotesList = () => {
     const ref = useRef(null);
 
     useEffect(() => {
-        getNotes();
+        if (localStorage.getItem('authToken'))
+            getNotes();
         // eslint-disable-next-line
     }, [])
 
