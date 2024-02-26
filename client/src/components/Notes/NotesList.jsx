@@ -16,12 +16,12 @@ const NotesList = () => {
     const generateLoadingArray = (length) => Array.from({ length }, (_, index) => index);
 
     const renderedNotes = useMemo(() => (
-        loading ? generateLoadingArray(15).map(g => <NoteItem key={g} loading />) :
+        loading ? generateLoadingArray(18).map(g => <NoteItem key={g} loading />) :
             notes.map(note => <NoteItem note={note} key={note._id} parent={ref} />)
     ), [loading, notes]);
 
     return (
-        <div ref={ref} className="container mx-auto px-4 pt-5 gap-3 flex flex-wrap justify-between items-start content-baseline flex-grow" >
+        <div ref={ref} className="container mx-auto px-5 pt-5 flex flex-wrap items-start content-baseline flex-grow" >
             {renderedNotes}
         </div>
     )

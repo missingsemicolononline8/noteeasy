@@ -18,6 +18,7 @@ const NoteItem = ({ note, parent, loading }) => {
     const handleEdit = () => {
         noteRef.current.style.left = noteRef.current.getBoundingClientRect().left + 'px';
         noteRef.current.style.top = noteRef.current.getBoundingClientRect().top + window.pageYOffset + 'px';
+        noteRef.current.style.width = noteRef.current.getBoundingClientRect().width + 'px';
         noteRef.current.style.position = 'absolute';
         x.set(0)
         y.set(0)
@@ -30,8 +31,8 @@ const NoteItem = ({ note, parent, loading }) => {
     console.log(`Note Item : ${note.title}`)
 
     return (
-        <div className='w-64 group'>
-            <motion.div key="componentB" ref={noteRef} layout layoutId={note._id} drag style={{ x, y, opacity: note.pending ? 0.4 : 1 }} dragConstraints={parent} whileDrag={{ scale: 1.1 }} dragElastic={0.2} className="w-64" >
+        <div className='w-1/6 p-1 group box-border'>
+            <motion.div key="componentB" ref={noteRef} layout layoutId={note._id} drag style={{ x, y, opacity: note.pending ? 0.4 : 1 }} dragConstraints={parent} whileDrag={{ scale: 1.1 }} dragElastic={0.2} className="w-full" >
                 <div className="card border border-[#e0e0e0] rounded-md overflow-hidden bg-white">
                     <div className="card-body relative">
                         <ToggleNotePinned className="group-hover:block" noteId={note._id} isPinned={note.pinned} />
