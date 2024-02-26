@@ -1,5 +1,7 @@
 import React, { useContext, useState, useRef, useCallback, useEffect } from 'react';
 import NotesContext from '../../context/Notes/NotesContext';
+import Input from '../UI/Input';
+import Button from '../UI/Button';
 
 export const resizeTextarea = (e) => {
     const textarea = e.target;
@@ -64,40 +66,13 @@ const Addnote = ({ classes }) => {
         <div className={classes}>
             <form ref={formRef} className='my-3 group rounded-lg shadow-custom overflow-hidden bg-white z-20 relative'>
                 <div className='hidden group-focus-within:block'>
-                    <input
-                        type='text'
-                        placeholder='Title'
-                        className='form-control w-full p-3 pb-2 outline-none'
-                        id='title'
-                        name='title'
-                        ref={titleInputRef}
-                    />
+                    <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' />
                 </div>
-                <textarea
-                    placeholder='Take a note...'
-                    className='form-control w-full px-3 py-2 outline-none resize-none text-lg group-focus-within:text-base overflow-hidden -mb-[7px]'
-                    id='description'
-                    name='description'
-                    rows="1"
-                    onChange={resizeTextarea}
-                    ref={descriptionInputRef}
-                ></textarea>
+                <Input inputRef={descriptionInputRef} placeholder='Take a note...' name='description' inputType='textarea' handleChange={resizeTextarea} />
                 <div className='hidden group-focus-within:block'>
-                    <input
-                        type='text'
-                        placeholder='Tag'
-                        className='form-control w-full px-3 py-2 outline-none'
-                        id='tag'
-                        name='tag'
-                        ref={tagInputRef}
-                    />
+                    <Input inputRef={tagInputRef} placeholder='Tag' name='tag' styleType='notes' />
                 </div>
-                <button
-                    className='hidden rounded group-focus-within:block float-right mr-3 mb-2 px-4 py-2 hover:bg-[rgba(95,99,104,0.039)] active:bg-[rgba(95,99,104,0.161)] focus-visible:outline-none focus-visible:bg-[rgba(95,99,104,0.039)]'
-                    onClick={handleAdd}
-                >
-                    Close
-                </button>
+                <Button text="Close" className='hidden rounded group-focus-within:block float-right mr-3 mb-2 px-4 py-2 hover:bg-[rgba(95,99,104,0.039)] active:bg-[rgba(95,99,104,0.161)] focus-visible:outline-none focus-visible:bg-[rgba(95,99,104,0.039)]' handleClick={handleAdd} />
             </form>
         </div>
     );

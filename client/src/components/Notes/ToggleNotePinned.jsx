@@ -9,7 +9,9 @@ const ToggleNotePinned = ({ noteId, className, isPinned }) => {
     const { toggleNotePin } = useContext(NotesContext)
 
     const handleClick = async () => {
-        toggleNotePin(noteId, pinned, setPinned)
+        const prevPinned = pinned;
+        setPinned(!pinned)
+        toggleNotePin(noteId, !pinned, () => setPinned(prevPinned))
     }
 
     return (

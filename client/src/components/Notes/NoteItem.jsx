@@ -27,7 +27,7 @@ const NoteItem = ({ note, parent }) => {
 
     return (
         <div className='w-64 group'>
-            <motion.div key="componentB" ref={noteRef} layout layoutId={note._id} drag style={{ x, y }} dragConstraints={parent} whileDrag={{ scale: 1.1 }} dragElastic={0.2} className="w-64" >
+            <motion.div key="componentB" ref={noteRef} layout layoutId={note._id} drag style={{ x, y, opacity: note.pending ? 0.4 : 1 }} dragConstraints={parent} whileDrag={{ scale: 1.1 }} dragElastic={0.2} className="w-64" >
                 <div className="card border border-[#e0e0e0] rounded-md overflow-hidden bg-white">
                     <div className="card-body relative">
                         <ToggleNotePinned className="group-hover:block" noteId={note._id} isPinned={note.pinned} />

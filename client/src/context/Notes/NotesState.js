@@ -1,8 +1,7 @@
 import { useCallback, useContext, useState} from "react";
 import NotesContext from "./NotesContext";
 import AlertContext from "../Alert/AlertContext";
-
-
+import { v4 as uuid } from 'uuid';
 
 const NotesState = (props) => {
   const API_HOST = process.env.REACT_APP_API_HOST;
@@ -12,7 +11,7 @@ const NotesState = (props) => {
   const setAlerts = useContext(AlertContext);
 
   // Fetch Notes
-  const getNotes = async () => {
+const getNotes = async () => {
     const response = await fetch(`${API_HOST}/api/notes/fetchallnotes`, {
       method: "GET",
       headers: {
@@ -22,13 +21,19 @@ const NotesState = (props) => {
     }); 
 
     setNotes(await response.json());
-  }
+}
 
   // Add a note
-  const addNote = useCallback(async (title, description, tag ) => {
-    console.log("Adding a new note");
-    // TODO : API CALL
-    const response = await fetch(`${API_HOST}/api/notes/addnote`, {
+const addNote = async (title, description, tag ) => {
+    
+    const previousNotes = notes;
+    const  tempNewNote = {
+      title,description,tag,pinned:false,_id: uuid(),pending:true
+    }
+
+    setNotes((prevNotes) => prevNotes.concat(tempNewNote))
+
+    fetch(`${API_HOST}/api/notes/addnote`, {
       method: "POST",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -40,42 +45,77 @@ const NotesState = (props) => {
         "description": description,
         "tag": tag
       }),
-    });
-    const note = await response.json();
+    }).then(r => {
+
+      if(r.ok) {
+        r.json().then(data => {
+            setNotes(previousNotes.concat(data));
+            setAlerts({type:"success",message:"Note Added"})          
+        })
+      }
+
+      else {
+           setNotes(previousNotes);
+           r.json().then(data => {
+              setAlerts({type:"error",message:data.message})
+           })
+      }
+
+    }).catch(e => {
+           setNotes(previousNotes);
+           setAlerts({type:"error",message:"Something went wrong. Please try again"})
+    })
     
-    if(response.status === 400) {
-        setAlerts({type:"error",message:"Error occured"})
-        console.log(note);
-        return;
-    }  
-    setNotes((prevNotes) => prevNotes.concat(note) )
-    setAlerts({type:"success",message:"Note Added"})
-  } ,[])
+}
 
   // Delete a note
-  const deleteNote = async (id) => {
-    // API Call
+const deleteNote = async (id) => {
+
+  const prevNotes = notes;
+  const newNotes = notes.filter((note) => {
+    return note._id !== id
+  })
+  
+  setNotes(newNotes);  
     
-    const response = await fetch(`${API_HOST}/api/notes/deletenote/${id}`, {
+  fetch(`${API_HOST}/api/notes/deletenote/${id}`, {
       method: "DELETE",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
         "Content-Type": "application/json"
-
       },
-    });
-    const newNotes = notes.filter((note) => {
-      return note._id !== id
-    })
-    setNotes(newNotes);
-    setAlerts({type:"error",message:"Note Deleted"})
-  }
+    }).then(r => {
+
+      if(r.ok)  
+      setAlerts({type:"success",message:"Note Deleted"})
+
+      else {
+        setNotes(prevNotes)
+        r.json().then(data => {
+           setAlerts({type:"error",message:data.message})
+        })
+      }
+    }).catch(e => {
+        setNotes(prevNotes);
+        setAlerts({type:"error",message:"Something went wrong. Please try again"})
+    }) 
+    
+}
 
   // Update a note
 
-  const updateNote = async (id, title, description, tag) => {
-    //API Call
-    const response = await fetch(`${API_HOST}/api/notes/updatenote/${id}`, {
+const updateNote = async (id, title, description, tag) => {
+    
+    const prevNotes = notes;
+
+    const newNotes = notes.map(note => {
+      return note._id === id ? {...note,title,description,tag} : note  
+    });
+
+    setNotes(newNotes);
+    setToUpdate(null);
+
+    fetch(`${API_HOST}/api/notes/updatenote/${id}`, {
       method: "PUT",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -88,40 +128,47 @@ const NotesState = (props) => {
         "description": description,
         "tag": tag
       }),
+    }).then(r => { 
+          
+          if(r.ok)  
+          setAlerts({type:"success",message:"Note Updated"})
+
+          else {
+            setNotes(prevNotes)
+            r.json().then(data => {
+               setAlerts({type:"error",message:data.message})
+            })
+          }
+
+        })
+      .catch(e => {
+        setNotes(prevNotes);
+        setAlerts({type:"error",message:"Something went wrong. Please try again."})
     });
-
-    const json = await response.json();
-
-    // Logic to edit in client
-    const newNotes = notes.map(note => {
-      return note._id === id ? {...note,title,description,tag} : note  
-    });
-
-    setNotes(newNotes);
-    setToUpdate(null);
-    setAlerts({type:"success",message:"Note Updated"})
-
+  
   }
 
   // Toggle Note Pinned
 
-  const toggleNotePin = async (noteId,pinned,cb) => {
-    const response = await fetch(`${API_HOST}/api/notes/togglepin/${noteId}`, {
+  const toggleNotePin = async (noteId,pinned,revert) => {
+
+  fetch(`${API_HOST}/api/notes/togglepin/${noteId}`, {
       method: "PUT",
       headers: {
           "auth-token": localStorage.getItem('authToken'),
           "Content-Type": "application/json"
       },
       body: JSON.stringify({
-          isPinned: !pinned
+          isPinned: pinned
       }),
 
+  }).then(r => {
+     if(!(r.ok)) {
+        revert()
+     }
+  }).catch(e => {
+    revert()
   })
-  if (response.status !== 200) {
-      return
-  }
-  cb((prev) => !prev)
-
   }
 
   return <NotesContext.Provider value={{ notes, toUpdate,addNote, deleteNote, updateNote, getNotes, setToUpdate, toggleNotePin }}>
