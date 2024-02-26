@@ -1,12 +1,11 @@
-import { useCallback, useContext, useState} from "react";
+import { useContext, useState} from "react";
 import NotesContext from "./NotesContext";
 import AlertContext from "../Alert/AlertContext";
 import { v4 as uuid } from 'uuid';
 
 const NotesState = (props) => {
   const API_HOST = process.env.REACT_APP_API_HOST;
-  const initState = [];
-  const [notes, setNotes] = useState(initState);
+  const [notes, setNotes] = useState([]);
   const [toUpdate, setToUpdate] = useState(null);
   const setAlerts = useContext(AlertContext);
 
@@ -20,7 +19,7 @@ const getNotes = async () => {
       }
     }); 
 
-    setNotes(await response.json());
+    return setNotes(await response.json());
 }
 
   // Add a note

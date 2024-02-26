@@ -3,9 +3,13 @@ import NotesContext from '../../context/Notes/NotesContext';
 import { motion, useMotionValue } from 'framer-motion';
 import { LiaTrashAlt, LiaEdit } from "react-icons/lia";
 import ToggleNotePinned from './ToggleNotePinned';
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+import { v4 as uuid } from 'uuid';
 
 
-const NoteItem = ({ note, parent }) => {
+
+const NoteItem = ({ note, parent, loading }) => {
     const { deleteNote, setToUpdate } = useContext(NotesContext);
     const x = useMotionValue(0)
     const y = useMotionValue(0)
@@ -35,13 +39,13 @@ const NoteItem = ({ note, parent }) => {
                             <>
                                 <h5 className="card-title pt-3 px-4">{note.title}</h5>
                                 <p className="card-text py-3 px-4 mb-1">{note.description}</p>
-                                <a className="mx-4 px-3 py-1 rounded-md bg-slate-200 text-xs font-semibold">{note.tag}</a>
                             </>
                             : <p className="card-text py-3 px-4">Empty Note</p>
                         }
+                        <a className="mx-4 px-3 py-1 rounded-md bg-slate-200 text-xs font-semibold">{note.tag}</a>
                         <div className='w-full opacity-0 group-hover:opacity-100 hover:opacity-100 transition text-lg text-slate-800 flex justify-end py-2 pr-2'>
-                            <button className="p-2 rounded-full hover:bg-gray-200" onClick={handleEdit}><LiaEdit /></button>
-                            <button className="p-2 rounded-full hover:bg-gray-200" onClick={() => deleteNote(note._id)}><LiaTrashAlt /></button>
+                            {loading ? <Skeleton width={30} containerClassName="mx-2" /> : <button className="p-2 rounded-full hover:bg-gray-200" onClick={handleEdit}><LiaEdit /></button>}
+                            {loading ? <Skeleton width={30} containerClassName="mx-2" /> : <button className="p-2 rounded-full hover:bg-gray-200" onClick={() => deleteNote(note._id)}><LiaTrashAlt /> </button>}
                         </div>
                     </div>
                 </div>
@@ -50,5 +54,13 @@ const NoteItem = ({ note, parent }) => {
     )
 }
 
+NoteItem.defaultProps = {
+    note: {
+        _id: uuid(),
+        title: <Skeleton />,
+        description: <Skeleton />,
+        tag: <Skeleton width={30} />
+    }
+}
 
 export default NoteItem
