@@ -1,4 +1,4 @@
-import { useContext, useState} from "react";
+import { useContext, useState, useRef } from "react";
 import NotesContext from "./NotesContext";
 import AlertContext from "../Alert/AlertContext";
 import { v4 as uuid } from 'uuid';
@@ -7,27 +7,29 @@ const NotesState = (props) => {
   const API_HOST = process.env.REACT_APP_API_HOST;
   const [notes, setNotes] = useState([]);
   const [toUpdate, setToUpdate] = useState(null);
+  const editModal = useRef(null);
   const setAlerts = useContext(AlertContext);
 
   // Fetch Notes
-const getNotes = async () => {
+  const getNotes = async () => {
     const response = await fetch(`${API_HOST}/api/notes/fetchallnotes`, {
       method: "GET",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
         "Content-Type": "application/json"
       }
-    }); 
+    });
 
     return setNotes(await response.json());
-}
+  }
 
   // Add a note
-const addNote = async (title, description, tag ) => {
-    
-    const previousNotes = notes;
-    const  tempNewNote = {
-      title,description,tag,pinned:false,_id: uuid(),pending:true
+  const addNote = (title, description, tag) => {
+
+    const initialNotes = notes;
+    const lId = uuid()
+    const tempNewNote = {
+      title, description, tag, pinned: false, _id: null, lId, pending: true
     }
 
     setNotes((prevNotes) => prevNotes.concat(tempNewNote))
@@ -46,38 +48,38 @@ const addNote = async (title, description, tag ) => {
       }),
     }).then(r => {
 
-      if(r.ok) {
+      if (r.ok) {
         r.json().then(data => {
-            setNotes(previousNotes.concat(data));
-            setAlerts({type:"success",message:"Note Added"})          
+          setNotes(initialNotes.concat({ ...data, lId }));
+          setAlerts({ type: "success", message: "Note Added" })
         })
       }
 
       else {
-           setNotes(previousNotes);
-           r.json().then(data => {
-              setAlerts({type:"error",message:data.message})
-           })
+        setNotes(initialNotes);
+        r.json().then(data => {
+          setAlerts({ type: "error", message: data.message })
+        })
       }
 
     }).catch(e => {
-           setNotes(previousNotes);
-           setAlerts({type:"error",message:"Something went wrong. Please try again"})
+      setNotes(initialNotes);
+      setAlerts({ type: "error", message: "Something went wrong. Please try again" })
     })
-    
-}
+
+  }
 
   // Delete a note
-const deleteNote = async (id) => {
+  const deleteNote = (id) => {
 
-  const prevNotes = notes;
-  const newNotes = notes.filter((note) => {
-    return note._id !== id
-  })
-  
-  setNotes(newNotes);  
-    
-  fetch(`${API_HOST}/api/notes/deletenote/${id}`, {
+    const initialNotes = notes;
+    const newNotes = notes.filter((note) => {
+      return note._id !== id
+    })
+
+    setNotes(newNotes);
+
+    fetch(`${API_HOST}/api/notes/deletenote/${id}`, {
       method: "DELETE",
       headers: {
         "auth-token": localStorage.getItem('authToken'),
@@ -85,33 +87,32 @@ const deleteNote = async (id) => {
       },
     }).then(r => {
 
-      if(r.ok)  
-      setAlerts({type:"success",message:"Note Deleted"})
+      if (r.ok)
+        setAlerts({ type: "success", message: "Note Deleted" })
 
       else {
-        setNotes(prevNotes)
+        setNotes(initialNotes)
         r.json().then(data => {
-           setAlerts({type:"error",message:data.message})
+          setAlerts({ type: "error", message: data.message })
         })
       }
     }).catch(e => {
-        setNotes(prevNotes);
-        setAlerts({type:"error",message:"Something went wrong. Please try again"})
-    }) 
-    
-}
+      setNotes(initialNotes);
+      setAlerts({ type: "error", message: "Something went wrong. Please try again" })
+    })
+
+  }
 
   // Update a note
 
-const updateNote = async (id, title, description, tag) => {
-    
-    const prevNotes = notes;
+  const updateNote = (id, title, description, tag) => {
 
-    const newNotes = notes.map(note => {
-      return note._id === id ? {...note,title,description,tag} : note  
-    });
+    const initialNotes = notes;
 
-    setNotes(newNotes);
+    setNotes(prevNotes => prevNotes.map(note => {
+      return note._id === id ? { ...note, title, description, tag } : note
+    }));
+
     setToUpdate(null);
 
     fetch(`${API_HOST}/api/notes/updatenote/${id}`, {
@@ -119,7 +120,6 @@ const updateNote = async (id, title, description, tag) => {
       headers: {
         "auth-token": localStorage.getItem('authToken'),
         "Content-Type": "application/json"
-
       },
 
       body: JSON.stringify({
@@ -127,50 +127,104 @@ const updateNote = async (id, title, description, tag) => {
         "description": description,
         "tag": tag
       }),
-    }).then(r => { 
-          
-          if(r.ok)  
-          setAlerts({type:"success",message:"Note Updated"})
+    }).then(r => {
 
-          else {
-            setNotes(prevNotes)
-            r.json().then(data => {
-               setAlerts({type:"error",message:data.message})
-            })
-          }
+      if (r.ok)
+        setAlerts({ type: "success", message: "Note Updated" })
 
+      else {
+        setNotes(initialNotes)
+        r.json().then(data => {
+          setAlerts({ type: "error", message: data.message })
         })
+      }
+
+    })
       .catch(e => {
-        setNotes(prevNotes);
-        setAlerts({type:"error",message:"Something went wrong. Please try again."})
-    });
-  
+        setNotes(initialNotes);
+        setAlerts({ type: "error", message: "Something went wrong. Please try again." })
+      });
+
+  }
+
+  const duplicateNote = (noteId) => {
+    const initialNotes = notes;
+    const noteToDuplicate = notes.filter(note => note._id === noteId);
+    const lId = uuid();
+    const tempNewNote = {
+      title: noteToDuplicate[0].title,
+      description: noteToDuplicate[0].description,
+      tag: noteToDuplicate[0].description,
+      pinned: false,
+      _id: null,
+      lId,
+      pending: true
+    }
+
+    setNotes((prevNotes) => prevNotes.concat(tempNewNote))
+
+    fetch(`${API_HOST}/api/notes/addnote`, {
+      method: "POST",
+      headers: {
+        "auth-token": localStorage.getItem('authToken'),
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        "title": noteToDuplicate[0].title,
+        "description": noteToDuplicate[0].description,
+        "tag": noteToDuplicate[0].tag
+      }),
+    }).then(r => {
+
+      if (r.ok) {
+        r.json().then(data => {
+          setNotes(initialNotes.concat({ ...data, lId }));
+          setAlerts({ type: "success", message: "Note Added" })
+        })
+      }
+
+      else {
+        setNotes(initialNotes);
+        r.json().then(data => {
+          setAlerts({ type: "error", message: data.message })
+        })
+      }
+
+    }).catch(e => {
+      setNotes(initialNotes);
+      setAlerts({ type: "error", message: "Something went wrong. Please try again" })
+    })
   }
 
   // Toggle Note Pinned
 
-  const toggleNotePin = async (noteId,pinned,revert) => {
+  const toggleNotePinned = async (noteId, pinned, revert) => {
 
-  fetch(`${API_HOST}/api/notes/togglepin/${noteId}`, {
+    setNotes(prevNotes => (
+      prevNotes.map(note => note._id === noteId ? { ...note, pinned } : note)
+    ))
+
+    fetch(`${API_HOST}/api/notes/togglepin/${noteId}`, {
       method: "PUT",
       headers: {
-          "auth-token": localStorage.getItem('authToken'),
-          "Content-Type": "application/json"
+        "auth-token": localStorage.getItem('authToken'),
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-          isPinned: pinned
+        isPinned: pinned
       }),
 
-  }).then(r => {
-     if(!(r.ok)) {
+    }).then(r => {
+      if (!(r.ok)) {
         revert()
-     }
-  }).catch(e => {
-    revert()
-  })
+      }
+    }).catch(e => {
+      revert()
+    })
   }
 
-  return <NotesContext.Provider value={{ notes, toUpdate,addNote, deleteNote, updateNote, getNotes, setToUpdate, toggleNotePin }}>
+  return <NotesContext.Provider value={{ notes, toUpdate, editModal, getNotes, addNote, deleteNote, updateNote, setToUpdate, duplicateNote, toggleNotePinned }}>
     {props.children}
   </NotesContext.Provider>
 }

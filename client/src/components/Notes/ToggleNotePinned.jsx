@@ -6,12 +6,12 @@ const ToggleNotePinned = ({ noteId, className, isPinned }) => {
     const [pinned, setPinned] = useState(isPinned);
 
     const icon = useMemo(() => pinned ? <BsFillPinFill /> : <BsPin />, [pinned])
-    const { toggleNotePin } = useContext(NotesContext)
+    const { toggleNotePinned } = useContext(NotesContext)
 
     const handleClick = async () => {
         const prevPinned = pinned;
         setPinned(!pinned)
-        toggleNotePin(noteId, !pinned, () => setPinned(prevPinned))
+        toggleNotePinned(noteId, !pinned, () => setPinned(prevPinned))
     }
 
     return (

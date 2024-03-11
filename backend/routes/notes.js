@@ -12,7 +12,7 @@ const { body, validationResult } = require('express-validator');
 router.get('/fetchallnotes', fetchUser, async (req, res) => {
 
     try {
-        const notes = await Note.find({ user: req.user.id }).sort({ pinned: -1 });
+        const notes = await Note.find({ user: req.user.id });
         res.json(notes)
 
     } catch (error) {
