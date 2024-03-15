@@ -1,4 +1,4 @@
-import { useContext, useState, useRef } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import NotesContext from "./NotesContext";
 import AlertContext from "../Alert/AlertContext";
 import { v4 as uuid } from 'uuid';
@@ -6,9 +6,15 @@ import { v4 as uuid } from 'uuid';
 const NotesState = (props) => {
   const API_HOST = process.env.REACT_APP_API_HOST;
   const [notes, setNotes] = useState([]);
-  const [toUpdate, setToUpdate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [toModify, setToModify] = useState(null);
   const editModal = useRef(null);
+  const modalCallbackRef = useRef(() => {});
   const setAlerts = useContext(AlertContext);
+
+  useEffect(() => {
+    getNotes().then(d => setLoading(false));
+}, [])
 
   // Fetch Notes
   const getNotes = async () => {
@@ -19,6 +25,10 @@ const NotesState = (props) => {
         "Content-Type": "application/json"
       }
     });
+
+    if(!(response.ok)) {
+       return
+    }
 
     return setNotes(await response.json());
   }
@@ -105,15 +115,19 @@ const NotesState = (props) => {
 
   // Update a note
 
-  const updateNote = (id, title, description, tag) => {
+  const updateNote = (id, titleInput, descriptionInput, tagInput) => {
 
     const initialNotes = notes;
 
     setNotes(prevNotes => prevNotes.map(note => {
-      return note._id === id ? { ...note, title, description, tag } : note
+      return note._id === id ? { 
+        ...note, 
+        title : titleInput.value, 
+        description: descriptionInput.value, 
+        tag: tagInput.value 
+      } : note
     }));
 
-    setToUpdate(null);
 
     fetch(`${API_HOST}/api/notes/updatenote/${id}`, {
       method: "PUT",
@@ -123,9 +137,9 @@ const NotesState = (props) => {
       },
 
       body: JSON.stringify({
-        "title": title,
-        "description": description,
-        "tag": tag
+        "title": titleInput.value,
+        "description": descriptionInput.value,
+        "tag": tagInput.value
       }),
     }).then(r => {
 
@@ -224,7 +238,7 @@ const NotesState = (props) => {
     })
   }
 
-  return <NotesContext.Provider value={{ notes, toUpdate, editModal, getNotes, addNote, deleteNote, updateNote, setToUpdate, duplicateNote, toggleNotePinned }}>
+  return <NotesContext.Provider value={{ notes, toModify, editModal, loading, modalCallbackRef, getNotes, addNote, deleteNote, updateNote, setToModify, duplicateNote, toggleNotePinned }}>
     {props.children}
   </NotesContext.Provider>
 }

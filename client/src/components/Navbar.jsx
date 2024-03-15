@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { NavLink, useNavigate } from "react-router-dom";
 import AlertContext from '../context/Alert/AlertContext';
 
-
 const Navbar = () => {
   const navigate = useNavigate();
   const setAlerts = useContext(AlertContext);
@@ -18,7 +17,7 @@ const Navbar = () => {
 
   useEffect(() => {
 
-    (async () => {
+    const checkAuthToken = async () => {
       if (!localStorage.getItem('authToken')) {
         return navigate("/login")
       }
@@ -30,17 +29,24 @@ const Navbar = () => {
         }
       })
 
+      if (!(request.ok)) {
+        return handleLogout()
+      }
       const user = await request.json();
+      if (!user) {
+        return handleLogout()
+      }
       setUserName(user.name)
+    }
 
-    })()
+    checkAuthToken()
 
   }, [])
 
 
   return (
-    <nav className="py-2 px-4 border-b-2 flex justify-between items-center h-14">
-      <NavLink className="navbar-brand font-mono" to="/">{process.env.REACT_APP_NAME}</NavLink>
+    <nav className="py-2 px-4 border-b-2 flex justify-between items-center">
+      <NavLink className="navbar-brand font-mono" to="/"><img src="./logo.png" className='w-48' alt={process.env.REACT_APP_NAME} /></NavLink>
 
       <ul className="list-none flex gap-3 items-center">
         {!localStorage.getItem("authToken") ?

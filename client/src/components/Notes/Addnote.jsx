@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useCallback, useEffect } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import NotesContext from '../../context/Notes/NotesContext';
 import Input from '../UI/Input';
 import Button from '../UI/Button';
@@ -9,7 +9,7 @@ export const resizeTextarea = (e) => {
     textarea.style.height = `${textarea.scrollHeight}px`;
 };
 
-const Addnote = ({ classes }) => {
+const Addnote = ({ children, ...props }) => {
     const { addNote } = useContext(NotesContext);
     const formRef = useRef(null);
     const titleInputRef = useRef(null);
@@ -63,7 +63,7 @@ const Addnote = ({ classes }) => {
     console.log("Add note component");
 
     return (
-        <div className={classes}>
+        <div {...props}>
             <form ref={formRef} className='my-3 group rounded-lg shadow-custom overflow-hidden bg-white z-20 relative'>
                 <div className='hidden group-focus-within:block'>
                     <Input inputRef={titleInputRef} placeholder="Title" name="title" styleType='notes' />

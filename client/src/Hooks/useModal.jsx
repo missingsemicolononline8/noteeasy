@@ -21,7 +21,7 @@ const useModal = (initRef = null) => {
         return <motion.dialog ref={initRef || modalRef} {...props}>{children}</motion.dialog>
     }
 
-    return [showModal, closeModal, modalDialog]
+    return [modalDialog, showModal, closeModal]
 }
 
 export default useModal;

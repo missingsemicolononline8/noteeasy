@@ -18,11 +18,11 @@ const signIn = async ({ email, password }) => {
     });
 
     const data = await response.json();
-    if (response.status === 200) {
-        return data;
+    if (response.status !== 200) {
+        throw new Error(JSON.stringify(data.message));
     }
 
-    throw new Error(JSON.stringify(data.message));
+    return data;
 
 }
 
