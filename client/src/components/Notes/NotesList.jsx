@@ -28,7 +28,7 @@ const NotesList = () => {
                 {generateLoadingArray(15).map(g => <NoteItem key={g} loading />)}
             </div>}
 
-            {pinnedNotes.length > 0 && <motion.div className='container mx-auto px-5 mb-10'>
+            {pinnedNotes.length > 0 && <motion.div className='container mx-auto px-5 mb-5'>
                 <motion.h4 initial={{ opacity: 0 }} animate={{ opacity: 1 }} >PINNED</motion.h4>
                 <div className="pt-5 flex flex-wrap items-start content-baseline flex-grow" >
                     <AnimatePresence>

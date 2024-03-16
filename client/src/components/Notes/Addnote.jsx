@@ -30,8 +30,6 @@ const Addnote = ({ children, ...props }) => {
         const description = descriptionInputRef.current;
         const tag = tagInputRef.current;
 
-        descriptionInputRef.current.removeAttribute('style');
-        formRef.current.removeAttribute('form-clicked');
         if (!description.value && !title.value) return;
         addNote(title.value, description.value, tag.value);
         resetInputs();
@@ -40,6 +38,8 @@ const Addnote = ({ children, ...props }) => {
     const documentListener = (e) => {
         if (formRef.current && !formRef.current.contains(e.target)) {
             handleAdd();
+            descriptionInputRef.current.removeAttribute('style');
+            formRef.current.removeAttribute('form-clicked');
             document.removeEventListener('mousedown', documentListener);
         }
     };
@@ -58,7 +58,7 @@ const Addnote = ({ children, ...props }) => {
             formRef.current?.removeEventListener('click', formClickHandler);
             document.removeEventListener('mousedown', documentListener);
         };
-    }, []);
+    }, [addNote]);
 
     console.log("Add note component");
 

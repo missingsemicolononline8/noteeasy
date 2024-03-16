@@ -37,12 +37,13 @@ const NotesState = (props) => {
   const addNote = (title, description, tag) => {
 
     const initialNotes = notes;
+    console.log("Init Notes",initialNotes)
     const lId = uuid()
     const tempNewNote = {
       title, description, tag, pinned: false, _id: null, lId, pending: true
     }
 
-    setNotes((prevNotes) => prevNotes.concat(tempNewNote))
+    setNotes(initialNotes.concat(tempNewNote))
 
     fetch(`${API_HOST}/api/notes/addnote`, {
       method: "POST",

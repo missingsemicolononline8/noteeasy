@@ -24,7 +24,7 @@ const Foreground = () => {
 
     const location = useLocation();
     useEffect(() => {
-        ReactGA.pageview(location.pathname + location.search);
+        ReactGA.send({ hitType: "pageview", page: window.location.pathname + window.location.search })
     }, [location]);
 
     return (
