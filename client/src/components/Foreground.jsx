@@ -5,7 +5,7 @@ import Login from '../pages/Login';
 import Signup from '../pages/Signup';
 import AlertState from '../context/Alert/AlertState';
 import { useEffect } from "react";
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga4';
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const Authcheck = ({ Comp }) => {
