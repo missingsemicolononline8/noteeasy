@@ -9,8 +9,9 @@ export const resizeTextarea = (e) => {
     textarea.style.height = `${textarea.scrollHeight}px`;
 };
 
-const Addnote = ({ children, ...props }) => {
+const Addnote = React.memo(({ children, ...props }) => {
     const { addNote } = useContext(NotesContext);
+
     const formRef = useRef(null);
     const titleInputRef = useRef(null);
     const descriptionInputRef = useRef(null);
@@ -29,7 +30,6 @@ const Addnote = ({ children, ...props }) => {
         const title = titleInputRef.current;
         const description = descriptionInputRef.current;
         const tag = tagInputRef.current;
-
         if (!description.value && !title.value) return;
         addNote(title.value, description.value, tag.value);
         resetInputs();
@@ -58,7 +58,7 @@ const Addnote = ({ children, ...props }) => {
             formRef.current?.removeEventListener('click', formClickHandler);
             document.removeEventListener('mousedown', documentListener);
         };
-    }, [addNote]);
+    }, []);
 
     console.log("Add note component");
 
@@ -76,6 +76,6 @@ const Addnote = ({ children, ...props }) => {
             </form>
         </div>
     );
-};
+});
 
 export default Addnote;

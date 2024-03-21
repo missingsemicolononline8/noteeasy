@@ -18,7 +18,7 @@ const useModal = (initRef = null) => {
     }
 
     const modalDialog = ({ children, ...props }) => {
-        return <motion.dialog ref={initRef || modalRef} {...props}>{children}</motion.dialog>
+        return <motion.dialog ref={initRef || modalRef} {...props} layout >{children}</motion.dialog>
     }
 
     return [modalDialog, showModal, closeModal]

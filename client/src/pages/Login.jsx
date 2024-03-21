@@ -4,6 +4,8 @@ import AlertContext from '../context/Alert/AlertContext';
 import userReducer from '../reducers/LoginSignup'
 import Form from '../components/Form';
 
+
+
 const signIn = async ({ email, password }) => {
     const API_HOST = process.env.REACT_APP_API_HOST;
     const response = await fetch(`${API_HOST}/api/auth/login`, {
@@ -57,12 +59,20 @@ const Login = () => {
         }
     }, [success])
 
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.has('email')) {
+            dispatch({ type: "input", name: "email", value: searchParams.get('email') })
+        }
+    }, [])
+
     const fields = [
         {
             label: 'Email address',
             inputType: 'email',
             name: 'email',
             placeholder: 'johndoe@example.com',
+            value: email,
             handleChange: (e) => dispatch({ type: "input", name: "email", value: e.target.value })
         },
         {

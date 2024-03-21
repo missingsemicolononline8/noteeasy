@@ -56,6 +56,13 @@ const Signup = () => {
     }
   }, [success])
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('email')) {
+      dispatch({ type: "input", name: "email", value: searchParams.get('email') })
+    }
+  }, [])
+
   const fields = [
     {
       label: 'Name',
@@ -67,6 +74,7 @@ const Signup = () => {
       label: 'Email address',
       inputType: 'email',
       name: 'email',
+      value: email,
       placeholder: 'johndoe@example.com',
       handleChange: (e) => dispatch({ type: "input", name: "email", value: e.target.value })
     },

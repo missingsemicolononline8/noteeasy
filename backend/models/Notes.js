@@ -20,6 +20,10 @@ const notesSchema = new Schema({
         type : Boolean,
         default : false 
     },
+    collaborators: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    }],
     date : {
         type: Date,
         default : Date.now

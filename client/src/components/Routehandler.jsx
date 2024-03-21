@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, Outlet, useNavigate, useLocation, } from "react-router-dom";
 import Navbar from './Navbar';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
@@ -6,6 +6,8 @@ import Signup from '../pages/Signup';
 import AlertState from '../context/Alert/AlertState';
 import { useEffect } from "react";
 import ReactGA from 'react-ga4';
+import Invite from "./Invite";
+import Background from "./Background";
 ReactGA.initialize(process.env.REACT_APP_GA_TRACKING_ID);
 
 const Authcheck = ({ Comp }) => {
@@ -20,7 +22,7 @@ const Authcheck = ({ Comp }) => {
     return !localStorage.getItem('authToken') && <Comp />
 }
 
-const Foreground = () => {
+const Routehandler = () => {
 
     const location = useLocation();
     useEffect(() => {
@@ -28,22 +30,25 @@ const Foreground = () => {
     }, [location]);
 
     return (
-        <div className="z-10 relative h-screen flex flex-col">
-            <AlertState>
-                <Routes>
-                    <Route path="/" element={<>
+
+        <AlertState>
+            <Routes>
+                <Route path="/" element={<>
+                    <Background />
+                    <div className="z-10 relative h-screen flex flex-col">
                         <Navbar />
                         <Outlet />
-                    </>} >
-                        <Route index element={<Home />} />
-                    </Route>
-                    <Route path="login" element={<Authcheck Comp={Login} />} />
-                    <Route path="signup" element={<Authcheck Comp={Signup} />} />
-                </Routes>
-            </AlertState>
-        </div>
+                    </div>
+                </>} >
+                    <Route index element={<Home />} />
+                </Route>
+                <Route path="login" element={<Authcheck Comp={Login} />} />
+                <Route path="signup" element={<Authcheck Comp={Signup} />} />
+                <Route path="invite" element={<Invite />} />
+            </Routes>
+        </AlertState>
 
     )
 }
 
-export default Foreground;
+export default Routehandler;

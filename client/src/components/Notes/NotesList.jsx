@@ -23,7 +23,7 @@ const NotesList = () => {
     console.log('Notelist rendered')
 
     return (
-        <div ref={ref} className='flex-grow overflow-x-hidden'>
+        <div ref={ref} className='flex-grow overflow-x-clip'>
             {loading && <div className="container mx-auto px-5 pt-5 flex flex-wrap items-start content-baseline flex-grow" >
                 {generateLoadingArray(15).map(g => <NoteItem key={g} loading />)}
             </div>}

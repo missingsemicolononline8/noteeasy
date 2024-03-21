@@ -1,13 +1,11 @@
 import './App.css';
-import Foreground from './components/Foreground';
-import Background from './components/Background';
+import Routehandler from './components/Routehandler';
 
 function App() {
 
   return (
     <div className='w-full h-screen relative'>
-      <Background />
-      <Foreground />
+      <Routehandler />
     </div>
   )
 

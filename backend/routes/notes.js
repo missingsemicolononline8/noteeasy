@@ -2,14 +2,21 @@ const express = require('express');
 const router = express.Router();
 const fetchUser = require('../middleware/fetchuser');
 const Note = require('../models/Notes');
+const User = require('../models/User');
+const Invite = require('../models/Invites');
+const nodemailer = require('nodemailer');
 const { body, validationResult } = require('express-validator');
+const emailBody = require("../Email/Invite")
 
 // ROUTE 1: Get all notes using: GET "/api/notes" . Login required
 
 router.get('/fetchallnotes', fetchUser, async (req, res) => {
 
     try {
-        const notes = await Note.find({ user: req.user.id });
+        const notes = await Note.find({  $or: [
+            { user: req.user.id },
+            { collaborators: req.user.id }
+          ] }).populate('user').populate('collaborators');
         return res.json(notes)
 
     } catch (error) {
@@ -36,6 +43,7 @@ router.post('/addnote', fetchUser, [
             title, description, tag, user: req.user.id
         });
 
+        
         const savedNote = await newNote.save();
         return res.status(200).json(savedNote)
 
@@ -59,14 +67,14 @@ router.put('/updatenote/:id', fetchUser, async (req, res) => {
     if(!note) {
         return res.status(404).json({message: "Not Found"});
     }
-    // Allow updation only if user owns this note
-    if(note.user.toString() !== req.user.id) {
+    // Allow updation only if user owns this note or is a collaborator of the note
+    if(note.user.toString() !== req.user.id  && !(note.collaborators.includes(req.user.id))) {
         return res.status(401).json({message:"Not Allowed"});
     }
 
     note = await Note.findByIdAndUpdate(req.params.id,{$set: newNote}, {new: true})
 
-    return res.json(note)
+    return res.status(200).json(note)
 
     } catch (error) {
         console.log(error.message)
@@ -100,7 +108,71 @@ router.put('/togglepin/:id', fetchUser, async (req, res) => {
     }
 });
 
-// ROUTE 4: Delete existing note using: DELETE "/api/notes/deletenote" . Login required
+// ROUTE 4: Add collaborator to note using: PATCH "api/notes/addcollaborator/{note_id}" . Login required
+
+router.patch('/addcollaborator/:id',fetchUser, async (req,res) => {
+    const {collaboratorEmail} = req.body
+    try {
+         // find the note to be updated & update it
+    const note = await Note.findById(req.params.id);
+    if(!note) {
+        return res.status(404).json({message: "Not Found"});
+    }
+    // Allow updation only if user owns this note or is a collaborator of the note
+    if(note.user.toString() !== req.user.id  && !(note.collaborators.includes(req.user.id))) {
+        return res.status(401).json({message:"Not Allowed"});
+    }
+
+    const collaboratorDetails = await User.findOne({email: collaboratorEmail});
+    if(collaboratorDetails) {
+        note.collaborators.push(collaboratorDetails._id)
+        await note.save()
+    }
+    else  {
+        const invite = new Invite({
+            noteId : note._id,
+            collaboratorEmail
+        })
+        await invite.save();
+    }
+
+    const sharer = await User.findById(req.user.id);
+        
+        let config = {
+            host: 'smtppro.zoho.in', // your email domain
+            port: 465,
+            secure: true, // use SSL
+            auth: {
+                user: process.env.GMAIL_APP_USER, // your email address
+                pass: process.env.GMAIL_APP_PASSWORD // your password
+             }
+        }
+        let transporter = nodemailer.createTransport(config);
+
+        let message = {
+            from: process.env.GMAIL_APP_USER, // sender address
+            to: collaboratorEmail, // list of receivers
+            subject: `Note shared with you: "${note.title}"`, // Subject line
+            html: emailBody(sharer.name,sharer.email,note,collaboratorEmail, collaboratorDetails), // html body
+        };
+
+        transporter.sendMail(message).then((info) => {
+            return res.status(200).json(note)
+        }).catch((err) => {
+            console.log(err)
+            return res.status(500).json({ message: err });
+        }
+        );
+
+
+    }
+    catch (error) {
+        return res.status(500).json({ message: error });
+    }
+})
+
+
+// ROUTE 5: Delete existing note using: DELETE "/api/notes/deletenote" . Login required
 
 router.delete('/deletenote/:id', fetchUser, async (req, res) => {
     
@@ -118,7 +190,7 @@ router.delete('/deletenote/:id', fetchUser, async (req, res) => {
 
     note = await Note.findByIdAndDelete(req.params.id)
 
-    return res.json({message:"Note deleted successfully"})
+    return res.status(200).json({message:"Note deleted successfully"})
 
     } catch (error) {
         console.log(error.message)
