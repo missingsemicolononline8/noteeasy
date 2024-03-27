@@ -44,8 +44,8 @@ const Notebody = ({ note, children }) => {
         <>
             {note.title || note.description ?
                 <>
-                    <h5 className="card-title pt-3 px-4">{note.title}</h5>
-                    <p className="card-text py-3 px-4 mb-1">{note.description.length > 450 ? note.description.slice(0, 450) + '...' : note.description}</p>
+                    <h5 className="card-title pt-3 px-4 font-bold">{note.title.length > 250 ? note.title.slice(0, 250) + '...' : note.title}</h5>
+                    <p className="card-text py-3 px-4 mb-1">{note.description.length > 250 ? note.description.slice(0, 250) + '...' : note.description}</p>
                 </>
                 : <p className="card-text py-3 px-4">Empty Note</p>
             }
