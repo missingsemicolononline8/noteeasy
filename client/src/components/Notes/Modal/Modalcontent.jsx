@@ -12,7 +12,7 @@ const Modalcontent = ({ resetPositions }) => {
     const heightRef = useRef(0)
 
     useEffect(() => {
-        setTimeout(() => {
+        queueMicrotask(() => {
             if (heightRef.current) {
                 controls.set({ scaleY: heightRef.current / divRef.current.offsetHeight })
                 controls.start({ scaleY: 1 })
@@ -23,8 +23,8 @@ const Modalcontent = ({ resetPositions }) => {
 
     console.log("Modal content")
     return (
-        <motion.div ref={divRef} className="rounded-lg bg-white w-[600px] p-5 pb-1 relative" style={{ transformOrigin: "top left" }} animate={controls}>
-            {modifyComponent === 'update' && <Updatenote resetPositions={resetPositions} initial={{ opacity: 0 }} animate={{ opacity: 1 }} />}
+        <motion.div ref={divRef} className="rounded-lg bg-white w-[600px] relative" style={{ transformOrigin: "top left" }} animate={controls}>
+            {modifyComponent === 'update' && <Updatenote resetPositions={resetPositions} />}
             {modifyComponent === 'addCollaborator' && <Addcollaborator />}
         </motion.div>
     )

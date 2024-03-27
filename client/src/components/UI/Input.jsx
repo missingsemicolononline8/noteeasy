@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 
-const Input = ({ label, placeholder, inputType, name, value, styleType, handleChange, inputRef }) => {
-
+const Input = ({ label, placeholder, inputType, name, value, styleType, handleChange, inputRef, classes }) => {
 
     const inputClass = styleType === 'user' ? 'outline-none rounded-lg border-2 py-2 px-3 border-gray-200' : 'w-full p-3 pb-2 outline-none';
 
@@ -10,7 +9,7 @@ const Input = ({ label, placeholder, inputType, name, value, styleType, handleCh
         return (
             <div className="flex flex-col gap-2">
                 {label && <label htmlFor={name} className="text-base font-bold">{label}</label>}
-                <input ref={inputRef} type={inputType} className={inputClass} id={name} name={name} placeholder={placeholder} onChange={handleChange} value={value} />
+                <input ref={inputRef} type={inputType} className={`${inputClass} ${classes}`} id={name} name={name} placeholder={placeholder} onChange={handleChange} value={value} />
             </div>
         )
 
@@ -20,8 +19,6 @@ const Input = ({ label, placeholder, inputType, name, value, styleType, handleCh
             <textarea rows="1" ref={inputRef} className='w-full px-3 py-2 outline-none resize-none text-lg group-focus-within:text-base overflow-hidden' id={name} name={name} placeholder={placeholder} onChange={handleChange} value={value}></textarea>
         </div>
     )
-
-
 }
 
 Input.propTypes = {

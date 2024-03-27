@@ -16,7 +16,7 @@ const Updatenote = ({ resetPositions }) => {
         titleInput.current.value = toModify.title;
         descriptionInput.current.value = toModify.description;
         tagInput.current.value = toModify.tag;
-        setTimeout(() => resizeTextarea({ target: descriptionInput.current }))
+        queueMicrotask(() => resizeTextarea({ target: descriptionInput.current }))
     }, [])
 
     const handleUpdate = () => {
@@ -31,10 +31,12 @@ const Updatenote = ({ resetPositions }) => {
     }
 
     return (
-        <motion.form className='pb-10 relative' >
-            <Input inputRef={titleInput} placeholder='Title' name='title' styleType='notes' />
-            <Input inputRef={descriptionInput} placeholder='note' name='description' inputType='textarea' handleChange={resizeTextarea} />
-            <Input inputRef={tagInput} placeholder='Tag' name='tag' styleType='notes' />
+        <motion.form className='pb-10 relative' initial={{ opacity: 0 }} animate={{ opacity: 1 }} >
+            <div className='max-h-96 overflow-x-auto p-5'>
+                <Input inputRef={titleInput} placeholder='Title' name='title' styleType='notes' classes="font-bold" />
+                <Input inputRef={descriptionInput} placeholder='note' name='description' inputType='textarea' handleChange={resizeTextarea} />
+                <Input inputRef={tagInput} placeholder='Tag' name='tag' styleType='notes' />
+            </div>
             <Button text="Close" className='rounded absolute right-20 bottom-2 px-4 py-2 hover:bg-[rgba(95,99,104,0.039)] active:bg-[rgba(95,99,104,0.161)] focus-visible:outline-none focus-visible:bg-[rgba(95,99,104,0.039)]' handleClick={handleClose} />
             <Button text="Save" className='rounded absolute right-0 bottom-2 px-4 py-2 hover:bg-[rgba(95,99,104,0.039)] active:bg-[rgba(95,99,104,0.161)] focus-visible:outline-none focus-visible:bg-[rgba(95,99,104,0.039)]' handleClick={handleUpdate} />
         </motion.form>

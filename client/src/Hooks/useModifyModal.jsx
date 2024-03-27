@@ -35,7 +35,7 @@ const useModifyModal = () => {
 
     useEffect(() => {
         if (toModify) {
-            setTimeout(() => {
+            queueMicrotask(() => {
                 const initialX = toModify.noteEl.getBoundingClientRect().left - toModify.notePositions.translatedX
                 const initialY = toModify.noteEl.getBoundingClientRect().top - toModify.notePositions.translatedY
 
